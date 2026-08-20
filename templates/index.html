@@ -1,0 +1,374 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div
+    class="page"
+    data-resume='{{ resume|tojson if resume else "{}" }}'
+    data-resume-id="{{ resume_id if resume_id else "" }}">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="hero-header">
+
+        <h1>🚀 ResumeForge AI</h1>
+
+        <p>
+            Build professional, ATS-friendly resumes with AI assistance,
+            live preview, ATS scoring, and one-click PDF export.
+        </p>
+
+    </header>
+
+    <!-- ================= TOP ACTIONS ================= -->
+
+    <div class="top-actions">
+
+        <a href="/my-resumes" class="nav-btn">
+            📄 My Resumes
+        </a>
+
+        <a href="/logout" class="logout-btn">
+            🚪 Logout
+        </a>
+
+    </div>
+
+    <div class="main-container">
+
+        <!-- ================= LEFT PANEL ================= -->
+
+        <div class="form-panel">
+
+            <h2>📝 Resume Details</h2>
+
+            <!-- ================= TEMPLATE ================= -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <span>🎨 Resume Template</span>
+
+                </div>
+
+                <select id="templateSelect">
+
+                    <option value="classic">Classic ATS</option>
+
+                    <option value="modern">Modern Blue</option>
+
+                    <option value="dark">Dark Professional</option>
+
+                </select>
+
+            </div>
+
+            <!-- ================= PERSONAL DETAILS ================= -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <span>👤 Personal Details</span>
+
+                </div>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Full Name"
+                    value="{{ resume.name if resume else '' }}">
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Email Address"
+                    value="{{ resume.email if resume else '' }}">
+
+                <input
+                    type="text"
+                    id="phone"
+                    placeholder="Phone Number"
+                    value="{{ resume.phone if resume else '' }}">
+
+                <input
+                    type="text"
+                    id="address"
+                    placeholder="Address"
+                    value="{{ resume.address if resume else '' }}">
+
+                <input
+                    type="text"
+                    id="linkedin"
+                    placeholder="LinkedIn Profile URL"
+                    value="{{ resume.linkedin if resume else '' }}">
+
+                <input
+                    type="text"
+                    id="github"
+                    placeholder="GitHub Profile URL"
+                    value="{{ resume.github if resume else '' }}">
+
+            </div>
+
+            <!-- ================= AI SUMMARY ================= -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <span>🤖 AI Professional Summary</span>
+
+                </div>
+
+                <input
+                    type="text"
+                    id="targetRole"
+                    placeholder="Target Role (e.g. Software Engineer)">
+
+                <textarea
+                    id="skillsInput"
+                    placeholder="Skills (comma separated)"></textarea>
+
+                <textarea
+                    id="experienceInput"
+                    placeholder="Briefly describe your experience"></textarea>
+
+                <div class="action-buttons">
+
+                    <button
+                        type="button"
+                        id="generateSummary"
+                        class="primary-btn">
+
+                        ✨ Generate Summary
+
+                    </button>
+
+                    <button
+                        type="button"
+                        id="analyzeResume"
+                        class="secondary-btn">
+
+                        🤖 Analyze Resume
+
+                    </button>
+
+                    <button
+                        type="button"
+                        id="checkATS"
+                        class="success-btn">
+
+                        📊 Check ATS Score
+
+                    </button>
+
+                    <button
+                        type="button"
+                        id="downloadResume"
+                        class="purple-btn">
+
+                        📥 Download PDF
+
+                    </button>
+
+                    <button
+                        type="button"
+                        id="saveResume"
+                        class="warning-btn">
+
+                        💾 Save Resume
+
+                    </button>
+
+                </div>
+
+                <div id="atsResult"></div>
+
+            </div>
+
+            <!-- ================= EDUCATION ================= -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <span>🎓 Education</span>
+
+                    <button
+                        type="button"
+                        id="addEducation"
+                        class="add-btn">
+
+                        + Add
+
+                    </button>
+
+                </div>
+
+                <div id="educationContainer"></div>
+
+            </div>
+
+            <!-- ================= SKILLS ================= -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <span>🛠 Skills</span>
+
+                </div>
+
+                <div class="skill-input">
+
+                    <input
+                        type="text"
+                        id="skillInput"
+                        placeholder="e.g. Python, React, Flask">
+
+                    <button
+                        type="button"
+                        id="addSkill"
+                        class="add-btn">
+
+                        + Add
+
+                    </button>
+
+                </div>
+
+                <div id="skillList"></div>
+
+            </div>
+
+            <!-- ================= EXPERIENCE ================= -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <span>💼 Experience</span>
+
+                    <button
+                        type="button"
+                        id="addExperience"
+                        class="add-btn">
+
+                        + Add
+
+                    </button>
+
+                </div>
+
+                <div id="experienceContainer"></div>
+
+            </div>
+
+            <!-- ================= PROJECTS ================= -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <span>🚀 Projects</span>
+
+                    <button
+                        type="button"
+                        id="addProject"
+                        class="add-btn">
+
+                        + Add
+
+                    </button>
+
+                </div>
+
+                <div id="projectContainer"></div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= RIGHT PANEL ================= -->
+
+        <div class="preview-panel">
+
+            <h2>Resume Preview</h2>
+
+            <div class="resume" id="resumePreview">
+
+                <!-- Resume Header -->
+                <div class="resume-header">
+                    <h1 id="previewName">Your Name</h1>
+                    <p id="previewEmail">email@example.com</p>
+                    <p id="previewPhone">Phone Number</p>
+                    <p id="previewAddress">Address</p>
+                    <p id="previewLinkedIn">LinkedIn</p>
+                    <p id="previewGithub">GitHub</p>
+                </div>
+
+                <hr>
+
+                <!-- Professional Summary -->
+                <div class="resume-section">
+                    <h2>Professional Summary</h2>
+                    <p id="summaryPreview">
+                        {{ resume.summary if resume else "No summary generated." }}
+                    </p>
+                </div>
+
+                <!-- AI Suggestions -->
+                <div class="resume-section">
+                    <h2>AI Suggestions</h2>
+                    <ul id="suggestionsPreview">
+                        <li>No suggestions yet.</li>
+                    </ul>
+                </div>
+
+                <!-- Education -->
+                <div class="resume-section">
+                    <h2>Education</h2>
+                    <div id="educationPreview">
+                        <p>No education added.</p>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="resume-section">
+                    <h2>Skills</h2>
+                    <div id="skillsPreview">
+                        <p>No skills added.</p>
+                    </div>
+                </div>
+
+                <!-- Experience -->
+                <div class="resume-section">
+                    <h2>Experience</h2>
+                    <div id="experiencePreview">
+                        <p>No experience added.</p>
+                    </div>
+                </div>
+
+                <!-- Projects -->
+                <div class="resume-section">
+                    <h2>Projects</h2>
+                    <div id="projectPreview">
+                        <p>No projects added.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script id="resumeData" type="application/json">
+    {{ resume|tojson if resume else 'null' }}
+    </script>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated files
+generated/
+*.pdf
+*.log
+*.whl
+*.zip
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Python build files
+build/
+dist/
+*.egg-info/

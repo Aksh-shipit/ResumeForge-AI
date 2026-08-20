@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <div class="dashboard-header">
+
+        <div>
+            <h1>📄 My Saved Resumes</h1>
+            <p>Manage, edit and update all your resumes in one place.</p>
+        </div>
+
+        <a href="{{ url_for('main.home') }}" class="new-resume-btn">
+            + Create New Resume
+        </a>
+
+    </div>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="searchResume"
+            placeholder="🔍 Search resumes by name, title or email...">
+    </div>
+
+    {% if resumes %}
+
+    <div class="resume-grid">
+
+        {% for resume in resumes %}
+
+        <div
+            class="resume-card"
+            data-name="{{ resume.name|lower }}"
+            data-email="{{ resume.email|lower }}"
+            data-title="{{ resume.title|lower }}">
+
+            <div class="resume-top">
+
+                <h2>{{ resume.title }}</h2>
+
+                <span class="template-badge">
+                    {{ resume.template|capitalize }}
+                </span>
+
+            </div>
+
+            <div class="resume-info">
+
+                <p>
+                    <strong>Name:</strong>
+                    {{ resume.name }}
+                </p>
+
+                <p>
+                    <strong>Email:</strong>
+                    {{ resume.email }}
+                </p>
+
+                <p>
+                    <strong>Created:</strong>
+
+                    {% if resume.created_at %}
+                        {{ resume.created_at.strftime("%d %b %Y • %I:%M %p") }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+            <div class="resume-actions">
+
+                <a
+                    href="{{ url_for('main.edit_resume', id=resume.id) }}"
+                    class="edit-btn">
+                    Edit
+                </a>
+
+                <button
+                    type="button"
+                    class="download-btn"
+                    data-id="{{ resume.id }}"
+                    onclick="downloadResume(this.dataset.id)">
+                    Download
+                </button>
+
+                <button
+                    type="button"
+                    class="delete-btn"
+                    data-id="{{ resume.id }}"
+                    onclick="deleteResume(this.dataset.id)">
+                    Delete
+                </button>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+
+    <div class="empty-icon">
+        📄
+    </div>
+
+    <h2>No resumes yet</h2>
+
+    <p>
+        Start building your first professional resume with
+        <strong>ResumeForge AI</strong>.
+    </p>
+
+    <a href="{{ url_for('main.home') }}" class="new-resume-btn">
+        + Create Your First Resume
+    </a>
+
+</div>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+async function deleteResume(id) {
+
+    if (!confirm("Delete this resume?")) return;
+
+    try {
+
+        const response = await fetch("/delete-resume/" + id, {
+            method: "DELETE"
+        });
+
+        const result = await response.json();
+
+        showToast(result.message);
+
+        if (response.ok) {
+
+            setTimeout(() => {
+                location.reload();
+            }, 2500);
+
+        }
+
+    } catch (error) {
+
+        showToast("Failed to delete resume.");
+
+    }
+
+}
+
+async function downloadResume(id) {
+
+    try {
+
+        const dataResponse = await fetch("/resume-data/" + id);
+
+        if (!dataResponse.ok) {
+            showToast("Resume not found.");
+            return;
+        }
+
+        const resumeData = await dataResponse.json();
+
+        const response = await fetch("/download-resume", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(resumeData)
+
+        });
+
+        if (!response.ok) {
+            showToast("Failed to generate PDF.");
+            return;
+        }
+
+        const blob = await response.blob();
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+
+        a.href = url;
+
+        a.download = `${resumeData.name}_Resume.pdf`;
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+
+        showToast("Failed to download resume.");
+
+    }
+
+}
+
+const searchInput = document.getElementById("searchResume");
+
+if (searchInput) {
+
+    searchInput.addEventListener("input", function () {
+
+        const value = this.value.toLowerCase();
+
+        const cards = document.querySelectorAll(".resume-card");
+
+        cards.forEach(card => {
+
+            const name = card.dataset.name;
+            const email = card.dataset.email;
+            const title = card.dataset.title;
+
+            if (
+                name.includes(value) ||
+                email.includes(value) ||
+                title.includes(value)
+            ) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+
+        });
+
+    });
+
+}
+
+</script>
+
+{% endblock %}

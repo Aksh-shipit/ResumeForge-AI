@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ResumeForge AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+    <a href="{{ url_for('main.home') }}" class="logo">
+        ResumeForge AI
+    </a>
+
+    {% if current_user.is_authenticated %}
+
+    <div class="profile-menu">
+
+        <button id="profileBtn">
+
+            👤 {{ current_user.name }}
+
+            ▼
+
+        </button>
+
+        <div class="dropdown" id="dropdown">
+
+            <a href="{{ url_for('main.my_resumes') }}">
+                📄 My Dashboard
+            </a>
+
+            <a href="{{ url_for('main.home') }}">
+                ➕ Create Resume
+            </a>
+
+            <a href="{{ url_for('main.logout') }}">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</nav>
+
+<div class="page-wrapper">
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="footer">
+
+        <div class="footer-container">
+
+            <p>
+                © {{ current_year }}  ResumeForge AI• Built with ❤️ using Flask & AI
+            </p>
+
+            <div class="footer-links">
+
+    <a href="https://github.com/Aksh-shipit"
+       target="_blank">
+
+        <i class="fab fa-github"></i>
+        GitHub
+
+    </a>
+
+    <a href="https://www.linkedin.com/in/sneha-agarwal-5a89912a3"
+       target="_blank">
+
+        <i class="fab fa-linkedin"></i>
+        LinkedIn
+
+    </a>
+
+</div>
+
+        </div>
+
+    </footer>
+
+</div>
+
+<div id="toast"></div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/education.js') }}"></script>
+<script src="{{ url_for('static', filename='js/skills.js') }}"></script>
+<script src="{{ url_for('static', filename='js/experience.js') }}"></script>
+<script src="{{ url_for('static', filename='js/projects.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script src="{{ url_for('static', filename='js/analyze.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ats.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pdf.js') }}"></script>
+<script src="{{ url_for('static', filename='js/template.js') }}"></script>
+<script src="{{ url_for('static', filename='js/saveResume.js') }}"></script>
+
+<script>
+
+const profileBtn=document.getElementById("profileBtn");
+
+const dropdown=document.getElementById("dropdown");
+
+if(profileBtn){
+
+profileBtn.onclick=()=>{
+
+dropdown.classList.toggle("show");
+
+};
+
+window.onclick=function(e){
+
+if(!e.target.closest(".profile-menu")){
+
+dropdown.classList.remove("show");
+
+}
+
+};
+
+}
+
+</script>
+
+</body>
+</html>
