@@ -40,7 +40,10 @@ generateBtn.addEventListener("click", async () => {
 
         const data = await response.json();
 
-        document.getElementById("summaryPreview").innerText = data.summary;
+console.log("SUMMARY API RESPONSE:", data);
+
+document.getElementById("summaryPreview").innerText =
+    data.summary || "No summary was returned by AI.";
 
     } catch (error) {
 
